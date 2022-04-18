@@ -1,0 +1,135 @@
+﻿@page "/ImageUpload"
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Authorization
+@inject ILogger<ImageUpload> Logger
+@attribute [Authorize]
+<h3>Upload Files</h3>
+
+
+<EditForm Model="@uploadinfo" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+  
+        <p>
+            <label>
+                Organization name:
+                <input type="text" @bind="uploadinfo.ContainerName" />
+            </label>
+        </p>
+
+
+        <p>
+            <label>
+                Upload up to @maxAllowedFiles of up to @ToSize(maxFileSize,SizeUnits.MB) MB:
+                <InputFile OnChange="@LoadFiles" multiple />
+            </label>
+        </p>
+          @if ( ( Status == "Ready"))
+    {
+        <div class="col-6">
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </div>
+    }
+    else if ( ( Status == "Uploading"))
+    {
+        <p>
+            Upload is ongoing
+        </p>
+    }
+        else if ( ( Status == "Done"))
+    {
+      <div class="col-6">
+            <button type="reset" class="btn btn-primary">Reset</button>
+        </div>
+    }
+</EditForm>
+
+
+@if (isLoading)
+{
+    <p>Choose less than @maxAllowedFiles</p>
+}
+else
+{
+
+    <table class="table">
+        <thead>
+            <tr>
+                <td>
+                    Name
+                </td>
+                <td>
+                    LastModified
+                </td>
+                <td>
+                    Size(MB)
+                </td>
+                <td>
+                    ContentType
+                </td>
+                <td>
+                    Status
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var file in loadedFiles)
+            {
+
+                <tr>
+                    <td>
+                        @file.BrowserFile.Name
+                    </td>
+                    <td>
+                        @file.BrowserFile.LastModified.Date.ToShortDateString();
+                    </td>
+                    <td>
+                        @ToSize(file.BrowserFile.Size,SizeUnits.MB)
+                    </td>
+                    <td>
+                        @file.BrowserFile.ContentType
+                    </td>
+                    <td>
+                        @if (file.Status == "Done")
+                        {
+                            <p>Done</p>
+                        }
+                        else if (file.Status == "Failed")
+                        {
+                            <p>Failed</p>
+                        }
+                    </td>
+                    @*                <td>
+                        <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                        <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
+                        <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+                        </td>*@
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+
+@code {
+    private UploadInfo uploadinfo = new UploadInfo();
+    private async Task HandleValidSubmit()
+    {
+       Status = "Uploading";
+        Logger.LogInformation("HandleValidSubmit called");
+        foreach (var fileInfo in loadedFiles)
+        {
+            await TryToUpload(fileInfo, uploadinfo);
+        }
+      Status = "Done";
+
+    }
+
+
+
+    public string ToSize(Int64 value, SizeUnits unit)
+    {
+        return (value / (double)Math.Pow(1024, (Int64)unit)).ToString("0.00");
+    }
+}
