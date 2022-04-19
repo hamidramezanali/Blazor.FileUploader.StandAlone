@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.FileUploader.StandAl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.FileUploader.StandAlone.Shared", "Blazor.FileUploader.StandAlone\Shared\Blazor.FileUploader.StandAlone.Shared.csproj", "{D277C148-A5B9-475E-A3E4-394633764C50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.UserManager", "Blazor.UserManager\Blazor.UserManager.csproj", "{2745281F-750D-4F8E-8875-B6582D192506}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.UserManager", "Blazor.UserManager\Blazor.UserManager.csproj", "{2745281F-750D-4F8E-8875-B6582D192506}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

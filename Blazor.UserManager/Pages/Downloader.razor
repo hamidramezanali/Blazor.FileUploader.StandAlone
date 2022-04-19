@@ -1,0 +1,46 @@
+﻿@page "/downloader"
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IConfiguration Configuration
+<h3>downloader</h3>
+
+
+<AuthorizeView>
+    <Authorized>
+        @if (@context.User.IsInRole(ADMINISTRATION_ROLE))
+        { }
+
+           </Authorized>
+    <NotAuthorized>
+        <p>You're not loggged in.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    string ADMINISTRATION_ROLE = "Administrators";
+    System.Security.Claims.ClaimsPrincipal CurrentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        CurrentUser = (await authenticationStateTask).User;
+        if (CurrentUser != null)
+        {
+            var user = await _UserManager.FindByNameAsync(CurrentUser.Identity.Name);
+            // Is Admin@BlazorHelpWebsite.com in administrator role?
+            var UserResult = await _UserManager.IsInRoleAsync(user, ADMINISTRATION_ROLE);
+            if (UserResult)
+            {
+                // Put admin in Administrator role
+            }
+        }
+        // Get the current logged in user
+       
+       
+    }
+}
